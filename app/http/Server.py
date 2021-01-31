@@ -21,7 +21,10 @@ class Server(BaseHTTPRequestHandler):
 
     def do(self) -> None:
         self._prepare_request()
+
         controller = self._resolve_controller()
+        if controller is None:
+            return
 
         method = getattr(controller, self.command.lower(), None)
         if not callable(method):
