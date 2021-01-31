@@ -3,7 +3,7 @@ from json import dumps
 from typing import Tuple, Optional
 from socketserver import BaseServer
 from app.http.Request import Request
-from main import get_container
+from main import container
 from app.http.routes import routes
 from app.http.controller.Controller import Controller
 from app.http.Response import Response
@@ -15,7 +15,7 @@ class Server(BaseHTTPRequestHandler):
     def __init__(self, request: bytes, client_address: Tuple[str, int], server: BaseServer):
         for method in self.SUPPORTED_METHODS:
             setattr(self, 'do_' + method, self.do)
-        self._container = get_container()
+        self._container = container
 
         super().__init__(request, client_address, server)
 
