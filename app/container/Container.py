@@ -31,6 +31,6 @@ class Container:
             init_arguments.update({name: self.get(type_path)})
 
         instance = class_reflection(**init_arguments)
-        self._instances.update({key: instance})
+        self.bind(key, instance)
 
         return instance

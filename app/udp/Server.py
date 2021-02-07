@@ -22,7 +22,7 @@ class Server:
     def run(self) -> None:
         while not self._shutdown:
             self._send(self._metrics)
-            sleep(1)
+            sleep(0.2)
 
     def shutdown(self) -> None:
         self._shutdown = True

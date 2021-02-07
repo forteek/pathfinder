@@ -5,11 +5,10 @@ from threading import Thread
 from app.pathfinder.Server import Server as PathfinderServer
 from app.udp.Server import Server as UDPServer
 
-container = Container()
-
 if __name__ == '__main__':
     print('Initializing app')
 
+    container = Container()
     bindings.apply(container)
 
     http_server: HTTPServer = container.get('http-server')

@@ -8,6 +8,7 @@ def apply(container: Container) -> None:
     env_handler: EnvHandler = container.get('app.env.EnvHandler.EnvHandler')
 
     httpd = HTTPServer(env_handler.list('HTTP_HOST', 'HTTP_PORT'), Server)
+    Server.CONTAINER = container
 
     container.bind('app.container.Container.Container', container)
     container.bind('http-server', httpd)

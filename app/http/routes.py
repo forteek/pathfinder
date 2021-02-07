@@ -1,3 +1,4 @@
 routes = {
-    '/map': 'MapController'
+    '/map': 'MapController',
+    '/orders': 'OrderController',
 }

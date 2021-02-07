@@ -1,9 +1,8 @@
 from http.server import BaseHTTPRequestHandler
-from json import dumps
+from json import dumps, loads
 from typing import Tuple, Optional
 from socketserver import BaseServer
 from app.http.Request import Request
-from main import container
 from app.http.routes import routes
 from app.http.controller.Controller import Controller
 from app.http.Response import Response
@@ -11,11 +10,11 @@ from app.http.Response import Response
 
 class Server(BaseHTTPRequestHandler):
     SUPPORTED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+    CONTAINER = None
 
     def __init__(self, request: bytes, client_address: Tuple[str, int], server: BaseServer):
         for method in self.SUPPORTED_METHODS:
             setattr(self, 'do_' + method, self.do)
-        self._container = container
 
         super().__init__(request, client_address, server)
 
@@ -43,14 +42,15 @@ class Server(BaseHTTPRequestHandler):
             self._get_body()
         )
 
-        self._container.bind('app.http.Request.Request', request)
+        self.CONTAINER.bind('app.http.Request.Request', request)
 
-    def _get_body(self) -> Optional[str]:
+    def _get_body(self) -> Optional[dict]:
         if 'Content-Length' not in self.headers:
             return None
 
         content_length = int(self.headers['Content-Length'])
-        return self.rfile.read(content_length).decode()
+
+        return loads(self.rfile.read(content_length).decode())
 
     def _resolve_controller(self) -> Optional[Controller]:
         try:
@@ -64,9 +64,9 @@ class Server(BaseHTTPRequestHandler):
         module = '.'.join(self.__module__.split('.')[:-1])
         class_path = '%s.controller.%s.%s' % (module, controller_name, controller_name)
 
-        return self._container.get(class_path)
+        return self.CONTAINER.get(class_path)
 
     def _response(self, response: Response):
         self.send_response(response.status_code)
         self.end_headers()
-        self.wfile.write(dumps(response.body).encode('utf-8'))
+        self.wfile.write(response.body.encode())
